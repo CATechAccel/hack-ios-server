@@ -12,5 +12,6 @@ func NewEcho() *echo.Echo {
 	e.Use(middleware.Recover())
 	u := controller.NewUser()
 	e.POST("/users", u.HandleCreateUser)
+	e.POST("/login", u.HandleLogin)
 	return e
 }
