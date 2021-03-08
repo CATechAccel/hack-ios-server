@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/ari1021/hack-ios-server/pkg/presentation"
+)
 
 func main() {
-	fmt.Println("Hello, world!")
+	e := presentation.NewEcho()
+	e.Logger.Fatal(e.Start(":8080"))
 }
