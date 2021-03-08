@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,21 +15,41 @@ func NewUser() *User {
 }
 
 func (u *User) HandleCreateUser(c echo.Context) error {
+	req := new(CreateUserRequest)
+	if err := c.Bind(req); err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
 	mockRes := &mockCreateUserResponse{
-		Token: "token",
+		Token: req.Name + req.Password,
 	}
 	return c.JSON(http.StatusOK, mockRes)
 }
 
 func (u *User) HandleLogin(c echo.Context) error {
+	req := new(LoginRequest)
+	if err := c.Bind(req); err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
 	mockRes := &mockLoginResponse{
-		Token: "token",
+		Token: req.Name + req.Password,
 	}
 	return c.JSON(http.StatusOK, mockRes)
 }
 
+type CreateUserRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
 type mockCreateUserResponse struct {
 	Token string `json:"token"`
+}
+
+type LoginRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 type mockLoginResponse struct {
