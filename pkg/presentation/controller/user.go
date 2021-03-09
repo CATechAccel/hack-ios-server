@@ -14,6 +14,24 @@ func NewUser() *User {
 	return &User{}
 }
 
+type CreateUserRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type mockCreateUserResponse struct {
+	Token string `json:"token"`
+}
+
+type LoginRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type mockLoginResponse struct {
+	Token string `json:"token"`
+}
+
 func (u *User) HandleCreateUser(c echo.Context) error {
 	req := new(CreateUserRequest)
 	if err := c.Bind(req); err != nil {
@@ -36,22 +54,4 @@ func (u *User) HandleLogin(c echo.Context) error {
 		Token: req.Name + req.Password,
 	}
 	return c.JSON(http.StatusOK, mockRes)
-}
-
-type CreateUserRequest struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
-type mockCreateUserResponse struct {
-	Token string `json:"token"`
-}
-
-type LoginRequest struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
-type mockLoginResponse struct {
-	Token string `json:"token"`
 }
