@@ -2,13 +2,15 @@ package application
 
 import (
 	"context"
+	"time"
 
 	"github.com/ari1021/hack-ios-server/pkg/domain/repository"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 )
 
 type User interface {
-	CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (userID string, err error)
+	CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (token string, err error)
 	FindUser(ctx context.Context, userName string, password string) (userID string, err error)
 }
 
@@ -43,23 +45,44 @@ func (u *UUID) Generate() (string, error) {
 	return uuid.String(), nil
 }
 
-// CreateUser は，userID(uuid)を生成し，user情報をDBにinsertし，userIDを返します．
-func (ua *UserApplication) CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (userID string, err error) {
-	userID, err = u.Generate()
+// CreateUser は，userID(uuid)を生成し，user情報をDBにinsertし，tokenを返します．
+func (ua *UserApplication) CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (token string, err error) {
+	userID, err := u.Generate()
 	if err != nil {
 		return "", err
 	}
+	// tokenを作成する
+	t := jwt.New(jwt.SigningMethodHS256)
+	claims := t.Claims.(jwt.MapClaims)
+	claims["id"] = userID
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	// TODO: secret(秘密鍵)をどのようにして保持するのかを考える
+	token, err = t.SignedString([]byte("secret"))
+	if err != nil {
+		return "", err
+	}
+	// dbにinsertする
 	if err := ua.userRepository.CreateUser(ctx, userID, userName, password); err != nil {
 		return "", err
 	}
-	return userID, nil
+	return token, nil
 }
 
-// FindUser は，userNameとpasswordをもとにして，DBからuser情報を取得し，userIDを返します．
-func (ua *UserApplication) FindUser(ctx context.Context, userName string, password string) (userID string, err error) {
-	userID, err = ua.userRepository.FindUser(ctx, userName, password)
+// FindUser は，userNameとpasswordをもとにして，DBからuser情報を取得し，tokenを返します．
+func (ua *UserApplication) FindUser(ctx context.Context, userName string, password string) (token string, err error) {
+	userID, err := ua.userRepository.FindUser(ctx, userName, password)
 	if err != nil {
 		return "", err
 	}
-	return userID, nil
+	// tokenを作成する
+	t := jwt.New(jwt.SigningMethodHS256)
+	claims := t.Claims.(jwt.MapClaims)
+	claims["id"] = userID
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	// TODO: secret(秘密鍵)をどのようにして保持するのかを考える
+	token, err = t.SignedString([]byte("secret"))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

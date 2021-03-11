@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/ari1021/hack-ios-server/pkg/application"
@@ -36,7 +35,7 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-// HandleCreateUser は，userを作成し，authTokenを返します．
+// HandleCreateUser は，userを作成し，tokenを返します．
 func (u *User) HandleCreateUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	uuidGenerator := application.NewUUIDGenerator()
@@ -44,31 +43,29 @@ func (u *User) HandleCreateUser(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	userID, err := u.UserApplication.CreateUser(ctx, uuidGenerator, req.Name, req.Password)
+	token, err := u.UserApplication.CreateUser(ctx, uuidGenerator, req.Name, req.Password)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "create user failed in UserApplication.CreateUser")
 	}
-	log.Println(userID)
 	res := &CreateUserResponse{
-		Token: "token",
+		Token: token,
 	}
 	return c.JSON(http.StatusOK, res)
 }
 
-// HandleLogin は，ログイン処理を行い，authTokenを返します．
+// HandleLogin は，ログイン処理を行い，tokenを返します．
 func (u *User) HandleLogin(c echo.Context) error {
 	ctx := c.Request().Context()
 	req := new(LoginRequest)
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	userID, err := u.UserApplication.FindUser(ctx, req.Name, req.Password)
+	token, err := u.UserApplication.FindUser(ctx, req.Name, req.Password)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid (userName, password)")
 	}
-	log.Println(userID)
 	res := &LoginResponse{
-		Token: "token",
+		Token: token,
 	}
 	return c.JSON(http.StatusOK, res)
 }

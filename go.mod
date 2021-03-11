@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/ari1021/websocket v0.0.0-20210214112646-b13d8dee094c
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/labstack/echo/v4 v4.2.1
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
