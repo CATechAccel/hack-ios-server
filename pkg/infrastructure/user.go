@@ -1,18 +1,22 @@
 package infrastructure
 
 import (
+	"context"
+	"errors"
 	"time"
 
+	"github.com/ari1021/hack-ios-server/pkg/domain/repository"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	ID        string    `gorm:"primaryKey"`
 	CreatedAt time.Time `gorm:"index"`
-	Name      string    `gorm:"not null"`
-	Password  string    `gorm:"not null"`
+	Name      string    `gorm:"UNIQUE_INDEX:compositeindex;not null"`
+	Password  string    `gorm:"UNIQUE_INDEX:compositeindex;not null"`
 }
 
+// NewUser は，infrastructure.User(gormのマッピングオブジェクト)を返します．
 func NewUser(userID string, userName string, password string) *User {
 	return &User{
 		ID:       userID,
@@ -25,24 +29,31 @@ type UserRepository struct {
 	Conn *gorm.DB
 }
 
-func (ur *UserRepository) GetDBConn() *gorm.DB {
-	return ur.Conn
+// NewUserRepository は，infrastructure.UserRepositoryを返します．
+func NewUserRepository(conn *gorm.DB) repository.User {
+	return &UserRepository{
+		Conn: conn,
+	}
 }
 
-func (ur *UserRepository) CreateUser(userID string, userName string, password string) error {
-	conn := ur.GetDBConn()
+// CreateUser は，userをDBにinsertします．
+func (ur *UserRepository) CreateUser(ctx context.Context, userID string, userName string, password string) (err error) {
 	user := NewUser(userID, userName, password)
-	if err := conn.Create(user).Error; err != nil {
+	if err := ur.Conn.WithContext(ctx).Create(user).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ur *UserRepository) FindUser(userName string, password string) error {
-	conn := ur.GetDBConn()
+// FindUser は，userNameとpasswordをもとにして，DBからuserを取得し，userIDを返します．
+func (ur *UserRepository) FindUser(ctx context.Context, userName string, password string) (userID string, err error) {
 	user := &User{}
-	if err := conn.Find(user, "name = ? AND password = ?", userName, password).Error; err != nil {
-		return err
+	res := ur.Conn.WithContext(ctx).Find(user, "name = ? AND password = ?", userName, password)
+	if err := res.Error; err != nil {
+		return "", err
 	}
-	return nil
+	if res.RowsAffected == 0 {
+		return "", errors.New("user not found")
+	}
+	return user.ID, nil
 }
