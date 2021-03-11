@@ -12,8 +12,8 @@ import (
 type User struct {
 	ID        string    `gorm:"primaryKey"`
 	CreatedAt time.Time `gorm:"index"`
-	Name      string    `gorm:"UNIQUE_INDEX:compositeindex;not null"`
-	Password  string    `gorm:"UNIQUE_INDEX:compositeindex;not null"`
+	Name      string    `gorm:"size:255;uniqueIndex:uq_users_00;not null"`
+	Password  string    `gorm:"size:255;uniqueIndex:uq_users_00;not null"`
 }
 
 // NewUser は，infrastructure.User(gormのマッピングオブジェクト)を返します．
