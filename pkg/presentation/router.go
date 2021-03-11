@@ -2,10 +2,12 @@ package presentation
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/ari1021/hack-ios-server/pkg/application"
 	"github.com/ari1021/hack-ios-server/pkg/infrastructure"
 	"github.com/ari1021/hack-ios-server/pkg/presentation/controller"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -24,5 +26,18 @@ func NewEcho() *echo.Echo {
 	uc := controller.NewUser(ua)
 	e.POST("/users", uc.HandleCreateUser)
 	e.POST("/login", uc.HandleLogin)
+	// tokenが正常に作動しているかの確認API
+	r := e.Group("/restricted")
+	// TODO: 秘密鍵の保持
+	r.Use(middleware.JWT([]byte("secret")))
+	r.GET("", restricted)
 	return e
+}
+
+// restricted は，jwtの認証を行い，userIDをjwtから取得します．
+func restricted(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	name := claims["id"].(string)
+	return c.String(http.StatusOK, "Welcome "+name+"!")
 }
