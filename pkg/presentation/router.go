@@ -13,5 +13,8 @@ func NewEcho() *echo.Echo {
 	u := controller.NewUser()
 	e.POST("/users", u.HandleCreateUser)
 	e.POST("/login", u.HandleLogin)
+
+	t := controller.NewTask()
+	e.POST("/tasks", t.HandleCreateTask)
 	return e
 }
