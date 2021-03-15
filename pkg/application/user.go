@@ -7,6 +7,7 @@ import (
 	"github.com/ari1021/hack-ios-server/core"
 	"github.com/ari1021/hack-ios-server/pkg/domain/entity"
 	"github.com/ari1021/hack-ios-server/pkg/domain/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User interface {
@@ -40,8 +41,13 @@ func (ua *UserApplication) CreateUser(ctx context.Context, u core.UUIDGenerator,
 	if err != nil {
 		return "", err
 	}
+	// passwordをhash化する
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
 	// dbにinsertする
-	if err := ua.userRepository.CreateUser(ctx, userID, userName, password); err != nil {
+	if err := ua.userRepository.CreateUser(ctx, userID, userName, hashed); err != nil {
 		return "", err
 	}
 	return token, nil
@@ -49,7 +55,14 @@ func (ua *UserApplication) CreateUser(ctx context.Context, u core.UUIDGenerator,
 
 // FindUser は，userNameとpasswordをもとにして，DBからuser情報を取得し，tokenを返します．
 func (ua *UserApplication) FindUser(ctx context.Context, userName string, password string) (token string, err error) {
-	userID, err := ua.userRepository.FindUser(ctx, userName, password)
+	hashed, err := ua.userRepository.FindPasswordByName(ctx, userName)
+	if err != nil {
+		return "", err
+	}
+	if err := bcrypt.CompareHashAndPassword(hashed, []byte(password)); err != nil {
+		return "", err
+	}
+	userID, err := ua.userRepository.FindUserIDByName(ctx, userName)
 	if err != nil {
 		return "", err
 	}

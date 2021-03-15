@@ -13,11 +13,11 @@ type User struct {
 	ID        string    `gorm:"primaryKey"`
 	CreatedAt time.Time `gorm:"index"`
 	Name      string    `gorm:"size:255;unique;not null"`
-	Password  string    `gorm:"size:255;not null"`
+	Password  []byte    `gorm:"size:255;not null"`
 }
 
 // NewUser は，infrastructure.User(gormのマッピングオブジェクト)を返します．
-func NewUser(userID string, userName string, password string) *User {
+func NewUser(userID string, userName string, password []byte) *User {
 	return &User{
 		ID:       userID,
 		Name:     userName,
@@ -37,7 +37,7 @@ func NewUserRepository(conn *gorm.DB) repository.User {
 }
 
 // CreateUser は，userをDBにinsertします．
-func (ur *UserRepository) CreateUser(ctx context.Context, userID string, userName string, password string) (err error) {
+func (ur *UserRepository) CreateUser(ctx context.Context, userID string, userName string, password []byte) (err error) {
 	user := NewUser(userID, userName, password)
 	if err := ur.Conn.WithContext(ctx).Create(user).Error; err != nil {
 		return err
@@ -45,10 +45,23 @@ func (ur *UserRepository) CreateUser(ctx context.Context, userID string, userNam
 	return nil
 }
 
-// FindUser は，userNameとpasswordをもとにして，DBからuserを取得し，userIDを返します．
-func (ur *UserRepository) FindUser(ctx context.Context, userName string, password string) (userID string, err error) {
+// FindPasswordByName は，userNameをもとにして，DBからuserを取得し，passwordを返します．
+func (ur *UserRepository) FindPasswordByName(ctx context.Context, userName string) (password []byte, err error) {
 	user := &User{}
-	res := ur.Conn.WithContext(ctx).Find(user, "name = ? AND password = ?", userName, password)
+	res := ur.Conn.WithContext(ctx).Find(user, "name = ?", userName)
+	if err := res.Error; err != nil {
+		return nil, err
+	}
+	if res.RowsAffected == 0 {
+		return nil, errors.New("user not found")
+	}
+	return user.Password, nil
+}
+
+// FindPasswordByName は，userNameをもとにして，DBからuserを取得し，userIDを返します．
+func (ur *UserRepository) FindUserIDByName(ctx context.Context, userName string) (userID string, err error) {
+	user := &User{}
+	res := ur.Conn.WithContext(ctx).Find(user, "name = ?", userName)
 	if err := res.Error; err != nil {
 		return "", err
 	}
