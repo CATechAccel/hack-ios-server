@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/ari1021/hack-ios-server/pkg/domain/entity"
 	"github.com/ari1021/hack-ios-server/pkg/domain/repository"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 )
 
@@ -52,12 +52,11 @@ func (ua *UserApplication) CreateUser(ctx context.Context, u UUIDGenerator, user
 		return "", err
 	}
 	// tokenを作成する
-	t := jwt.New(jwt.SigningMethodHS256)
-	claims := t.Claims.(jwt.MapClaims)
-	claims["id"] = userID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	t := entity.NewToken()
+	t.SetClaim("id", userID)
+	t.SetClaim("exp", time.Now().Add(time.Hour*72).Unix())
 	// TODO: secret(秘密鍵)をどのようにして保持するのかを考える
-	token, err = t.SignedString([]byte("secret"))
+	token, err = t.Sign()
 	if err != nil {
 		return "", err
 	}
@@ -75,12 +74,11 @@ func (ua *UserApplication) FindUser(ctx context.Context, userName string, passwo
 		return "", err
 	}
 	// tokenを作成する
-	t := jwt.New(jwt.SigningMethodHS256)
-	claims := t.Claims.(jwt.MapClaims)
-	claims["id"] = userID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	t := entity.NewToken()
+	t.SetClaim("id", userID)
+	t.SetClaim("exp", time.Now().Add(time.Hour*72).Unix())
 	// TODO: secret(秘密鍵)をどのようにして保持するのかを考える
-	token, err = t.SignedString([]byte("secret"))
+	token, err = t.Sign()
 	if err != nil {
 		return "", err
 	}
