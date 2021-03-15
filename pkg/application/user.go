@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/ari1021/hack-ios-server/core"
 	"github.com/ari1021/hack-ios-server/pkg/domain/entity"
 	"github.com/ari1021/hack-ios-server/pkg/domain/repository"
-	"github.com/google/uuid"
 )
 
 type User interface {
-	CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (token string, err error)
+	CreateUser(ctx context.Context, u core.UUIDGenerator, userName string, password string) (token string, err error)
 	FindUser(ctx context.Context, userName string, password string) (userID string, err error)
 }
 
@@ -25,28 +25,8 @@ func NewUserApplication(userRepository repository.User) User {
 	}
 }
 
-type UUIDGenerator interface {
-	Generate() (string, error)
-}
-
-type UUID struct{}
-
-// NewUUIDGenerator は，application.UUIDGeneratorを返します．
-func NewUUIDGenerator() UUIDGenerator {
-	return &UUID{}
-}
-
-// Generate は，uuidを返します．
-func (u *UUID) Generate() (string, error) {
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return "", err
-	}
-	return uuid.String(), nil
-}
-
 // CreateUser は，userID(uuid)を生成し，user情報をDBにinsertし，tokenを返します．
-func (ua *UserApplication) CreateUser(ctx context.Context, u UUIDGenerator, userName string, password string) (token string, err error) {
+func (ua *UserApplication) CreateUser(ctx context.Context, u core.UUIDGenerator, userName string, password string) (token string, err error) {
 	userID, err := u.Generate()
 	if err != nil {
 		return "", err

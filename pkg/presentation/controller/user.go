@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/ari1021/hack-ios-server/core"
 	"github.com/ari1021/hack-ios-server/pkg/application"
 	"github.com/labstack/echo/v4"
 )
@@ -38,7 +39,7 @@ type LoginResponse struct {
 // HandleCreateUser は，userを作成し，tokenを返します．
 func (u *User) HandleCreateUser(c echo.Context) error {
 	ctx := c.Request().Context()
-	uuidGenerator := application.NewUUIDGenerator()
+	uuidGenerator := core.NewUUIDGenerator()
 	req := new(CreateUserRequest)
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
