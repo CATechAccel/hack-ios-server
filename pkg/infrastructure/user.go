@@ -10,10 +10,12 @@ import (
 )
 
 type User struct {
-	ID        string    `gorm:"primaryKey"`
-	CreatedAt time.Time `gorm:"index"`
-	Name      string    `gorm:"size:255;unique;not null"`
-	Password  []byte    `gorm:"size:255;not null"`
+	ID        string `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Name      string         `gorm:"size:255;unique;not null"`
+	Password  []byte         `gorm:"size:255;not null"`
 }
 
 // NewUser は，infrastructure.User(gormのマッピングオブジェクト)を返します．
