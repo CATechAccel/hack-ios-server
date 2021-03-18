@@ -28,11 +28,22 @@ type GetTaskResult struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Done        string `json:"done"`
+	Done        bool   `json:"done"`
 }
 
 type mockGetTaskResponse struct {
 	Response []GetTaskResult
+}
+
+type TaskDoneRequest struct {
+	ID string `json:"id"`
+}
+
+type mockTaskDoneResponse struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Done        bool   `json:"done"`
 }
 
 func (t *Task) HandleCreateTask(c echo.Context) error {
@@ -65,5 +76,21 @@ func (t *Task) HandleGetTask(c echo.Context) error {
 		Response: TaskResultList,
 	}
 
+	return c.JSON(http.StatusOK, mockRes)
+}
+
+func (t *Task) HandleTaskDone(c echo.Context) error {
+	req := new(TaskDoneRequest)
+	if err := c.Bind(req); err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+
+	mockRes := &mockTaskDoneResponse{
+		ID:          "doneID",
+		Name:        "doneName",
+		Description: "doneDescription",
+		Done:        true,
+	}
 	return c.JSON(http.StatusOK, mockRes)
 }
