@@ -10,7 +10,12 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Table `hack-ios-server_api`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `hack-ios-server_api`.`user` (
+CREATE SCHEMA IF NOT EXISTS  `hack-ios-server_api` DEFAULT CHARACTER SET utf8mb4 ;
+USE `hack-ios-server_api`;
+
+SET CHARSET utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `user` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `auth_token` VARCHAR(128) NOT NULL COMMENT '認証トークン',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
@@ -24,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `hack-ios-server_api`.`user` (
 -- -----------------------------------------------------
 -- Table `hack-ios-server_api`.`task`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `hack-ios-server_api`.`task` (
+CREATE TABLE IF NOT EXISTS `task` (
     `id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
     `description` VARCHAR(128) NOT NULL COMMENT '詳細',
@@ -37,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `hack-ios-server_api`.`task` (
 -- -----------------------------------------------------
 -- Table `hack-ios-server_api`.`user_task`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `hack-ios-server_api`.`user_task` (
+CREATE TABLE IF NOT EXISTS `user_task` (
     `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `task_id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     PRIMARY KEY (`user_id`, `task_id`),

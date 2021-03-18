@@ -10,6 +10,7 @@ services:
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     environment:
       MYSQL_ROOT_PASSWORD: "hack-ios-server"
 
