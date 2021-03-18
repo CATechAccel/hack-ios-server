@@ -24,6 +24,17 @@ type mockCreateTaskResponse struct {
 	Description string `json:"description"`
 }
 
+type GetTaskResult struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Done        string `json:"done"`
+}
+
+type mockGetTaskResponse struct {
+	Response []GetTaskResult
+}
+
 func (t *Task) HandleCreateTask(c echo.Context) error {
 	req := new(CreateTaskRequest)
 	if err := c.Bind(req); err != nil {
@@ -34,5 +45,25 @@ func (t *Task) HandleCreateTask(c echo.Context) error {
 		Name:        req.Name,
 		Description: req.Description,
 	}
+	return c.JSON(http.StatusOK, mockRes)
+}
+
+func (t *Task) HandleGetTask(c echo.Context) error {
+	var TaskResultList []GetTaskResult
+
+	TaskResultList = append(TaskResultList, GetTaskResult{
+		ID:          "testID1",
+		Name:        "testName1",
+		Description: "testDescription1",
+	})
+	TaskResultList = append(TaskResultList, GetTaskResult{
+		ID:          "testID2",
+		Name:        "testName2",
+		Description: "testDescription2",
+	})
+	mockRes := &mockGetTaskResponse{
+		Response: TaskResultList,
+	}
+
 	return c.JSON(http.StatusOK, mockRes)
 }
