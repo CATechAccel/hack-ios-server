@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
 
@@ -28,8 +28,11 @@ services:
   swagger-ui:
     image: swaggerapi/swagger-ui:latest
     environment:
-      SWAGGER_JSON: /api/api-document.yaml
+      SWAGGER_JSON: /api/api-document.yml
     volumes:
       - ./api-document.yml:/api/api-document.yml:ro
     ports:
-      - 127.0.0.1:3000:8080
+      - 3000:8080
+volumes:
+  db-data:
+    driver: local
