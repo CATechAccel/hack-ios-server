@@ -73,7 +73,10 @@ paths:
       responses:
         200:
           description: A successful response.
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksResponse"
     get:
       tags:
         - task
@@ -108,7 +111,10 @@ paths:
       responses:
         200:
           description: A successful response.
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksDoneResponse"
 
 components:
   securitySchemes:
@@ -156,26 +162,15 @@ components:
         description:
           type: string
           description: タスク内容
+    PostTasksResponse:
+      $ref: "#/components/schemas/Task"
     GetTasksResponse:
       type: object
       properties:
         tasks:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: タスクID
-              name:
-                type: string
-                description: タスク名
-              description:
-                type: string
-                description: タスク内容
-              isDone:
-                type: boolean
-                description: タスク完了判定
+            $ref: "#/components/schemas/Task"
     PostTasksDoneRequest:
       type: object
       properties:
@@ -187,3 +182,25 @@ components:
               id:
                 type: string
                 description: タスクID
+    PostTasksDoneResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: タスクID
+        name:
+          type: string
+          description: タスク名
+        description:
+          type: string
+          description: タスク内容
+        isDone:
+          type: boolean
+          description: タスク完了判定
