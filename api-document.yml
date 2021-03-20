@@ -173,40 +173,14 @@ components:
           type: string
           description: タスク内容
     PostTasksResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          description: タスクID
-        name:
-          type: string
-          description: タスク名
-        description:
-          type: string
-          description: タスク内容
-        isDone:
-          type: boolean
-          description: タスク完了判定
+      $ref: "#/components/schemas/Task"
     GetTasksResponse:
       type: object
       properties:
         tasks:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: タスクID
-              name:
-                type: string
-                description: タスク名
-              description:
-                type: string
-                description: タスク内容
-              isDone:
-                type: boolean
-                description: タスク完了判定
+            $ref: "#/components/schemas/Task"
     PostTasksDoneRequest:
       type: object
       properties:
@@ -224,17 +198,19 @@ components:
         tasks:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: タスクID
-              name:
-                type: string
-                description: タスク名
-              description:
-                type: string
-                description: タスク内容
-              isDone:
-                type: boolean
-                description: タスク完了判定
+            $ref: "#/components/schemas/Task"
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: タスクID
+        name:
+          type: string
+          description: タスク名
+        description:
+          type: string
+          description: タスク内容
+        isDone:
+          type: boolean
+          description: タスク完了判定
