@@ -16,5 +16,7 @@ func NewEcho() *echo.Echo {
 
 	t := controller.NewTask()
 	e.POST("/tasks", t.HandleCreateTask)
+	e.GET("/tasks", t.HandleGetTask)
+	e.POST("/tasks/done", t.HandleTaskDone)
 	return e
 }
