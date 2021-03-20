@@ -28,22 +28,29 @@ type GetTaskResult struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Done        bool   `json:"done"`
+	IsDone      bool   `json:"isDone"`
 }
 
 type mockGetTaskResponse struct {
-	Response []GetTaskResult
+	Response []*GetTaskResult
 }
 
-type TaskDoneRequest struct {
+type taskID struct {
 	ID string `json:"id"`
 }
 
-type mockTaskDoneResponse struct {
+type taskDoneRequest struct {
+	TaskIDs []*taskID `json:"taskIDs"`
+}
+
+type task struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Done        bool   `json:"done"`
+	IsDone      bool   `json:"isDone"`
+}
+type mockTaskDoneResponse struct {
+	Tasks []*task `json:"tasks"`
 }
 
 func (t *Task) HandleCreateTask(c echo.Context) error {
@@ -60,17 +67,19 @@ func (t *Task) HandleCreateTask(c echo.Context) error {
 }
 
 func (t *Task) HandleGetTask(c echo.Context) error {
-	var TaskResultList []GetTaskResult
+	var TaskResultList []*GetTaskResult
 
-	TaskResultList = append(TaskResultList, GetTaskResult{
+	TaskResultList = append(TaskResultList, &GetTaskResult{
 		ID:          "testID1",
 		Name:        "testName1",
 		Description: "testDescription1",
+		IsDone:      true,
 	})
-	TaskResultList = append(TaskResultList, GetTaskResult{
+	TaskResultList = append(TaskResultList, &GetTaskResult{
 		ID:          "testID2",
 		Name:        "testName2",
 		Description: "testDescription2",
+		IsDone:      false,
 	})
 	mockRes := &mockGetTaskResponse{
 		Response: TaskResultList,
@@ -80,17 +89,24 @@ func (t *Task) HandleGetTask(c echo.Context) error {
 }
 
 func (t *Task) HandleTaskDone(c echo.Context) error {
-	req := new(TaskDoneRequest)
+	req := new(taskDoneRequest)
 	if err := c.Bind(req); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-
-	mockRes := &mockTaskDoneResponse{
-		ID:          "doneID",
-		Name:        "doneName",
-		Description: "doneDescription",
-		Done:        true,
+	taskIDs := req.TaskIDs
+	tasks := make([]*task, 0, len(taskIDs))
+	for _, taskID := range taskIDs {
+		task := &task{
+			ID:          taskID.ID,
+			Name:        "doneName",
+			Description: "doneDescription",
+			IsDone:      true,
+		}
+		tasks = append(tasks, task)
+	}
+	mockRes := mockTaskDoneResponse{
+		Tasks: tasks,
 	}
 	return c.JSON(http.StatusOK, mockRes)
 }
