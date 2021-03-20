@@ -61,13 +61,8 @@ paths:
       summary: タスク作成APi
       description: |
         タスクを作成します．
-      parameters:
-        - name: x-token
-          in: header
-          description: 認証トークン
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         description: Request Body
         content:
@@ -85,13 +80,8 @@ paths:
       summary: タスク取得APi
       description: |
         タスクを取得します．
-      parameters:
-        - name: x-token
-          in: header
-          description: 認証トークン
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       responses:
         200:
           description: A successful response.
@@ -106,13 +96,8 @@ paths:
       summary: タスク完了API
       description: |
         タスクを完了状態にします．
-      parameters:
-        - name: x-token
-          in: header
-          description: 認証トークン
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         description: Request Body
         content:
@@ -126,6 +111,11 @@ paths:
           content: {}
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     PostUsersRequest:
       type: object
