@@ -78,7 +78,10 @@ paths:
       responses:
         200:
           description: A successful response.
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksResponse"
     get:
       tags:
         - task
@@ -123,7 +126,10 @@ paths:
       responses:
         200:
           description: A successful response.
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksDoneResponse"
 
 components:
   schemas:
@@ -166,6 +172,21 @@ components:
         description:
           type: string
           description: タスク内容
+    PostTasksResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: タスクID
+        name:
+          type: string
+          description: タスク名
+        description:
+          type: string
+          description: タスク内容
+        isDone:
+          type: boolean
+          description: タスク完了判定
     GetTasksResponse:
       type: object
       properties:
@@ -197,3 +218,23 @@ components:
               id:
                 type: string
                 description: タスクID
+    PostTasksDoneResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: タスクID
+              name:
+                type: string
+                description: タスク名
+              description:
+                type: string
+                description: タスク内容
+              isDone:
+                type: boolean
+                description: タスク完了判定
