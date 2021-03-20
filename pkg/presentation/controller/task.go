@@ -14,33 +14,8 @@ func NewTask() *Task {
 	return &Task{}
 }
 
-type CreateTaskRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
-type mockCreateTaskResponse struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
-type GetTaskResult struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	IsDone      bool   `json:"isDone"`
-}
-
-type mockGetTaskResponse struct {
-	Response []*GetTaskResult
-}
-
 type taskID struct {
 	ID string `json:"id"`
-}
-
-type taskDoneRequest struct {
-	TaskIDs []*taskID `json:"taskIDs"`
 }
 
 type task struct {
@@ -49,40 +24,61 @@ type task struct {
 	Description string `json:"description"`
 	IsDone      bool   `json:"isDone"`
 }
+
+type createTaskRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type mockCreateTaskResponse struct {
+	task
+}
+
+type mockGetTaskResponse struct {
+	Tasks []*task `json:"tasks"`
+}
+
+type taskDoneRequest struct {
+	TaskIDs []*taskID `json:"taskIDs"`
+}
+
 type mockTaskDoneResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
 func (t *Task) HandleCreateTask(c echo.Context) error {
-	req := new(CreateTaskRequest)
+	req := new(createTaskRequest)
 	if err := c.Bind(req); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
 	mockRes := &mockCreateTaskResponse{
-		Name:        req.Name,
-		Description: req.Description,
+		task{
+			ID:          "id",
+			Name:        req.Name,
+			Description: req.Description,
+			IsDone:      false,
+		},
 	}
 	return c.JSON(http.StatusOK, mockRes)
 }
 
 func (t *Task) HandleGetTask(c echo.Context) error {
-	var TaskResultList []*GetTaskResult
-
-	TaskResultList = append(TaskResultList, &GetTaskResult{
+	var tasks []*task
+	tasks = append(tasks, &task{
 		ID:          "testID1",
 		Name:        "testName1",
 		Description: "testDescription1",
 		IsDone:      true,
 	})
-	TaskResultList = append(TaskResultList, &GetTaskResult{
+	tasks = append(tasks, &task{
 		ID:          "testID2",
 		Name:        "testName2",
 		Description: "testDescription2",
 		IsDone:      false,
 	})
 	mockRes := &mockGetTaskResponse{
-		Response: TaskResultList,
+		Tasks: tasks,
 	}
 
 	return c.JSON(http.StatusOK, mockRes)
