@@ -8,14 +8,14 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Table `hack-ios-server_api`.`user`
+-- Table `hack_ios_server_api`.`users`
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS  `hack-ios-server_api` DEFAULT CHARACTER SET utf8mb4 ;
-USE `hack-ios-server_api`;
+CREATE SCHEMA IF NOT EXISTS  `hack_ios_server_api` DEFAULT CHARACTER SET utf8mb4 ;
+USE `hack_ios_server_api`;
 
 SET CHARSET utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `auth_token` VARCHAR(128) NOT NULL COMMENT '認証トークン',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 
 -- -----------------------------------------------------
--- Table `hack-ios-server_api`.`task`
+-- Table `hack_ios_server_api`.`tasks`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `task` (
+CREATE TABLE IF NOT EXISTS `tasks` (
     `id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
     `description` VARCHAR(128) NOT NULL COMMENT '詳細',
@@ -40,22 +40,22 @@ CREATE TABLE IF NOT EXISTS `task` (
 
 
 -- -----------------------------------------------------
--- Table `hack-ios-server_api`.`user_task`
+-- Table `hack_ios_server_api`.`user_task`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_task` (
+CREATE TABLE IF NOT EXISTS `user_tasks` (
     `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `task_id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     PRIMARY KEY (`user_id`, `task_id`),
-    INDEX `fk_user_task_user_idx` (`user_id` ASC),
-    INDEX `fk_user_task_task_idx` (`task_id` ASC),
-    CONSTRAINT `fk_user_task_user`
+    INDEX `fk_user_tasks_user_idx` (`user_id` ASC),
+    INDEX `fk_user_tasks_task_idx` (`task_id` ASC),
+    CONSTRAINT `fk_user_tasks_user`
     FOREIGN KEY (`user_id`)
-    REFERENCES `hack-ios-server_api`.`user` (`id`)
+    REFERENCES `hack_ios_server_api`.`users` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-    CONSTRAINT `fk_user_task_task`
+    CONSTRAINT `fk_user_tasks_task`
     FOREIGN KEY (`task_id`)
-    REFERENCES `hack-ios-server_api`.`task` (`id`)
+    REFERENCES `hack_ios_server_api`.`tasks` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB
