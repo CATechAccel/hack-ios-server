@@ -1,0 +1,206 @@
+openapi: 3.0.2
+info:
+  title: hack ios server API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: user
+    description: ユーザ関連API
+  - name: task
+    description: タスク関連API
+paths:
+  /users:
+    post:
+      tags:
+        - user
+      summary: ユーザ作成API
+      description: |
+        ユーザを作成します．
+        tokenは他のAPIコール時にヘッダに付与します．
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUsersRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostUsersResponse"
+  /login:
+    post:
+      tags:
+        - user
+      summary: ログインAPI
+      description: |
+        ログインします．
+        tokenは他のAPIコール時にヘッダに付与します．
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostLoginRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostLoginResponse"
+  /tasks:
+    post:
+      tags:
+        - task
+      summary: タスク作成APi
+      description: |
+        タスクを作成します．
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostTasksRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksResponse"
+    get:
+      tags:
+        - task
+      summary: タスク取得APi
+      description: |
+        タスクを取得します．
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTasksResponse"
+  /tasks/done:
+    post:
+      tags:
+        - task
+      summary: タスク完了API
+      description: |
+        タスクを完了状態にします．
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Request Body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostTasksDoneRequest"
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostTasksDoneResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PostUsersRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: ユーザ名
+        password:
+          type: string
+          description: パスワード
+    PostUsersResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: トークン
+    PostLoginRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: ユーザ名
+        password:
+          type: string
+          description: パスワード
+    PostLoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: トークン
+    PostTasksRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: タスク名
+        description:
+          type: string
+          description: タスク内容
+    PostTasksResponse:
+      $ref: "#/components/schemas/Task"
+    GetTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+    PostTasksDoneRequest:
+      type: object
+      properties:
+        taskIDs:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: タスクID
+    PostTasksDoneResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: タスクID
+        name:
+          type: string
+          description: タスク名
+        description:
+          type: string
+          description: タスク内容
+        isDone:
+          type: boolean
+          description: タスク完了判定
