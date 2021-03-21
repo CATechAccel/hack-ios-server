@@ -24,6 +24,7 @@ func NewEcho() *echo.Echo {
 	ur := infrastructure.NewUserRepository(conn)
 	ua := application.NewUserApplication(ur)
 	uc := controller.NewUser(ua)
+	t := controller.NewTask()
 	e.POST("/users", uc.HandleCreateUser)
 	e.POST("/login", uc.HandleLogin)
 	// tokenが正常に作動しているかの確認API
@@ -31,6 +32,9 @@ func NewEcho() *echo.Echo {
 	// TODO: 秘密鍵の保持
 	r.Use(middleware.JWT([]byte("secret")))
 	r.GET("", restricted)
+	e.POST("/tasks", t.HandleCreateTask)
+	e.GET("/tasks", t.HandleGetTask)
+	e.POST("/tasks/done", t.HandleTaskDone)
 	return e
 }
 
