@@ -14,16 +14,17 @@ CREATE SCHEMA IF NOT EXISTS  `hack_ios_server_api` DEFAULT CHARACTER SET utf8mb4
 USE `hack_ios_server_api`;
 
 SET CHARSET utf8mb4;
+SET sql_mode = ALLOW_INVALID_DATES;
 
 CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
     `name` VARCHAR(64) NOT NULL COMMENT 'ユーザ名',
-    `created_at` timestamp NOT NULL COMMENT '作成時刻',
-    `updated_at` timestamp NOT NULL COMMENT '更新時刻',
-    `deleted_at` timestamp NOT NULL COMMENT '削除時刻',
+    `created_at` timestamp NOT NULL COMMENT '作成日時',
+    `updated_at` timestamp NOT NULL COMMENT '更新日時',
+    `deleted_at` timestamp NOT NULL COMMENT '削除日時',
     PRIMARY KEY (`id`),
-    INDEX `idx_auth_token` (`auth_token` ASC))
+    INDEX `idx_created_at` (`created_at` ASC))
     ENGINE = InnoDB
     COMMENT = 'ユーザ';
 
