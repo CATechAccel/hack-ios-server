@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  server:
+    build:
+      context: .
+      dockerfile: ./server.dockerfile
+    env_file: ./configs/server.env
+    depends_on:
+      - mysql
+    image: server-sample-img
+    container_name: hack-ios-server
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/hack-ios-server
+    tty: true
 
   mysql:
     image: mysql:5.7
