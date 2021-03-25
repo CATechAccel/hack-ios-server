@@ -17,9 +17,11 @@ SET CHARSET utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
-    `auth_token` VARCHAR(128) NOT NULL COMMENT '認証トークン',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
     `name` VARCHAR(64) NOT NULL COMMENT 'ユーザ名',
+    `created_at` timestamp NOT NULL COMMENT '作成時刻',
+    `updated_at` timestamp NOT NULL COMMENT '更新時刻',
+    `deleted_at` timestamp NOT NULL COMMENT '削除時刻',
     PRIMARY KEY (`id`),
     INDEX `idx_auth_token` (`auth_token` ASC))
     ENGINE = InnoDB
