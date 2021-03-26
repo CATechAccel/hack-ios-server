@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
     `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
-    `deleted_at` TIMESTAMP NOT NULL COMMENT '削除日時',
-    `name` VARCHAR(64) NOT NULL COMMENT 'ユーザ名',
+    `deleted_at` TIMESTAMP COMMENT '削除日時',
+    `name` VARCHAR(64) UNIQUE NOT NULL COMMENT 'ユーザ名',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
     PRIMARY KEY (`id`),
     INDEX `idx_created_at` (`created_at` ASC))
@@ -36,12 +36,14 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
     `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
-    `deleted_at` TIMESTAMP NOT NULL COMMENT '削除日時',
+    `deleted_at` TIMESTAMP COMMENT '削除日時',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
     `description` VARCHAR(128) COMMENT 'タスクの詳細',
-    `is_done` BIT NOT NULL COMMENT '状態',
+    `is_done` BIT NOT NULL COMMENT 'タスクの状態',
     `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
-    PRIMARY KEY (`id`))
+    PRIMARY KEY (`id`),
+    INDEX `idx_created_at` (`created_at` ASC),
+    FOREIGN KEY fk_tasks_user_id(user_id) REFERENCES users(id))
     ENGINE = InnoDB
     COMMENT = 'タスク';
 
