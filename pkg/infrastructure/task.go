@@ -22,16 +22,6 @@ type Task struct {
 	User        User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func NewTask(taskID string, taskName string, taskDescription *string, isDone bool, userID string) *Task {
-	return &Task{
-		ID:          taskID,
-		Name:        taskName,
-		Description: taskDescription,
-		IsDone:      isDone,
-		UserID:      userID,
-	}
-}
-
 func taskToEntity(t *Task) (task *entity.Task) {
 	task = &entity.Task{
 		ID:          t.ID,
@@ -47,7 +37,13 @@ func taskToEntity(t *Task) (task *entity.Task) {
 }
 
 func entityToTask(task *entity.Task) (t *Task) {
-	t = NewTask(task.ID, task.Name, task.Description, task.IsDone, task.UserID)
+	t = &Task{
+		ID:          task.ID,
+		Name:        task.Name,
+		Description: task.Description,
+		IsDone:      task.IsDone,
+		UserID:      task.UserID,
+	}
 	return t
 }
 
