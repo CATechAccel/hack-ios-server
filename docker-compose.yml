@@ -8,12 +8,12 @@ services:
     depends_on:
       - mysql
     image: hack-ios-server-image
-    container_name: hack-ios-server-image
+    container_name: hack-ios-server-cnt
+    command: air -c ./config/.air.toml
     ports:
       - 8080:8080
     volumes:
       - .:/hack-ios-server
-    tty: true
 
   mysql:
     image: mysql:5.7
