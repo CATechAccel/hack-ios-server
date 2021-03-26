@@ -14,6 +14,12 @@ services:
       - 8080:8080
     volumes:
       - .:/hack-ios-server
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: "hack-ios-server"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: hack_ios_server_api
 
   mysql:
     image: mysql:5.7
