@@ -5,11 +5,10 @@ services:
     build:
       context: .
       dockerfile: ./server.dockerfile
-    env_file: ./configs/server.env
     depends_on:
       - mysql
-    image: server-sample-img
-    container_name: hack-ios-server
+    image: hack-ios-server-image
+    container_name: hack-ios-server-image
     ports:
       - 8080:8080
     volumes:
