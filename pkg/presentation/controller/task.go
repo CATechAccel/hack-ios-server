@@ -76,7 +76,7 @@ func (t *Task) HandleCreateTask(c echo.Context) error {
 			IsDone:      te.IsDone,
 		},
 	}
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (t *Task) HandleGetTask(c echo.Context) error {
