@@ -18,11 +18,11 @@ SET sql_mode = ALLOW_INVALID_DATES;
 
 CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
-    `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
+    `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
+    `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
+    `deleted_at` TIMESTAMP NOT NULL COMMENT '削除日時',
     `name` VARCHAR(64) NOT NULL COMMENT 'ユーザ名',
-    `created_at` timestamp NOT NULL COMMENT '作成日時',
-    `updated_at` timestamp NOT NULL COMMENT '更新日時',
-    `deleted_at` timestamp NOT NULL COMMENT '削除日時',
+    `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
     PRIMARY KEY (`id`),
     INDEX `idx_created_at` (`created_at` ASC))
     ENGINE = InnoDB
@@ -34,36 +34,16 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tasks` (
     `id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
+    `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
+    `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
+    `deleted_at` TIMESTAMP NOT NULL COMMENT '削除日時',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
-    `description` VARCHAR(128) NOT NULL COMMENT '詳細',
-    `done` BIT NOT NULL COMMENT '状態',
+    `description` VARCHAR(128) COMMENT 'タスクの詳細',
+    `is_done` BIT NOT NULL COMMENT '状態',
+    `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     PRIMARY KEY (`id`))
     ENGINE = InnoDB
     COMMENT = 'タスク';
-
-
--- -----------------------------------------------------
--- Table `hack_ios_server_api`.`user_task`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_tasks` (
-    `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
-    `task_id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
-    PRIMARY KEY (`user_id`, `task_id`),
-    INDEX `fk_user_tasks_user_idx` (`user_id` ASC),
-    INDEX `fk_user_tasks_task_idx` (`task_id` ASC),
-    CONSTRAINT `fk_user_tasks_user`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `hack_ios_server_api`.`users` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    CONSTRAINT `fk_user_tasks_task`
-    FOREIGN KEY (`task_id`)
-    REFERENCES `hack_ios_server_api`.`tasks` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-    ENGINE = InnoDB
-    COMMENT = 'ユーザ所持タスク';
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
