@@ -23,11 +23,17 @@ type Task struct {
 }
 
 func taskToEntity(t *Task) (task *entity.Task) {
+	var deletedAt *time.Time
+	if t.DeletedAt.Valid {
+		deletedAt = &t.DeletedAt.Time
+	} else {
+		deletedAt = nil
+	}
 	task = &entity.Task{
 		ID:          t.ID,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
-		DeletedAt:   t.DeletedAt.Time,
+		DeletedAt:   deletedAt,
 		Name:        t.Name,
 		Description: t.Description,
 		IsDone:      t.IsDone,
