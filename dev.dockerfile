@@ -1,6 +1,6 @@
 FROM golang:alpine3.12
 
-WORKDIR /hack-ios-server
+WORKDIR /app
 
 COPY ./ ./
 
