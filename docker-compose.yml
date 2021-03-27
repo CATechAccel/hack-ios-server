@@ -21,6 +21,8 @@ services:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
       MYSQL_DATABASE: hack_ios_server_api
+    networks:
+      - mysql_net
 
   mysql:
     build:
@@ -39,6 +41,8 @@ services:
       TZ: "Asia/Tokyo"
     cap_add:
       - SYS_NICE # mbind: Operation not permitted 回避
+    networks:
+      - mysql_net
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -51,6 +55,8 @@ services:
       - mysql
     ports:
       - 4000:80
+    networks:
+      - mysql_net
 
   swagger-ui:
     image: swaggerapi/swagger-ui:latest
@@ -63,3 +69,6 @@ services:
 volumes:
   db-data:
     driver: local
+
+networks:
+  mysql_net:
