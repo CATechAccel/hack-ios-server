@@ -4,7 +4,10 @@ services:
   server:
     build:
       context: .
-      dockerfile: dev.dockerfile
+      # 本番環境用の Dockerfile を指定
+      # server.dockerfile は開発環境のみ想定
+      dockerfile: Dockerfile
+      target: builder
     depends_on:
       - mysql
     image: hack-ios-server-image
@@ -13,7 +16,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - .:/hack-ios-server
+      - .:/app
     environment:
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: "hack-ios-server"
