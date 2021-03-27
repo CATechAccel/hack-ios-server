@@ -26,6 +26,7 @@ func NewConnection() (*gorm.DB, error) {
 func migrate(conn *gorm.DB) error {
 	if err := conn.AutoMigrate(
 		&User{},
+		&Task{},
 	); err != nil {
 		return fmt.Errorf("failed to migrate: %w", err)
 	}
