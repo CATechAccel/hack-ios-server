@@ -4,7 +4,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: ./server.dockerfile
+      dockerfile: dev.dockerfile
     depends_on:
       - mysql
     image: hack-ios-server-image
