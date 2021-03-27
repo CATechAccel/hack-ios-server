@@ -4,9 +4,8 @@ services:
   server:
     build:
       context: .
-      # 本番環境用の Dockerfile を指定
-      # server.dockerfile は開発環境のみ想定
-      dockerfile: Dockerfile
+      # dev.dockerfile は開発環境のみ想定
+      dockerfile: dev.dockerfile
       target: builder
     depends_on:
       - mysql
