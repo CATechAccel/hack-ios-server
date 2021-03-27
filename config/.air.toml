@@ -7,7 +7,7 @@ tmp_dir = "./tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./server ./cmd/main.go"
+cmd = "go build -mod=readonly -v -o ./server ./cmd/main.go"
 
 # Binary file yields from `cmd`.
 bin = "./server"
