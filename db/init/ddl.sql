@@ -5,8 +5,7 @@
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 -- -----------------------------------------------------
 -- Table `hack_ios_server_api`.`users`
 -- -----------------------------------------------------
@@ -14,13 +13,12 @@ CREATE SCHEMA IF NOT EXISTS  `hack_ios_server_api` DEFAULT CHARACTER SET utf8mb4
 USE `hack_ios_server_api`;
 
 SET CHARSET utf8mb4;
-SET sql_mode = ALLOW_INVALID_DATES;
 
 CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
-    `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
-    `deleted_at` TIMESTAMP COMMENT '削除日時',
+    `updated_at` TIMESTAMP NULL DEFAULT NULL COMMENT '更新日時',
+    `deleted_at` TIMESTAMP NULL DEFAULT NULL COMMENT '削除日時',
     `name` VARCHAR(64) UNIQUE NOT NULL COMMENT 'ユーザ名',
     `password` VARCHAR(128) NOT NULL COMMENT 'パスワード',
     PRIMARY KEY (`id`),
@@ -35,8 +33,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS `tasks` (
     `id` VARCHAR(128) NOT NULL COMMENT 'タスクID',
     `created_at` TIMESTAMP NOT NULL COMMENT '作成日時',
-    `updated_at` TIMESTAMP NOT NULL COMMENT '更新日時',
-    `deleted_at` TIMESTAMP COMMENT '削除日時',
+    `updated_at` TIMESTAMP NULL DEFAULT NULL COMMENT '更新日時',
+    `deleted_at` TIMESTAMP NULL DEFAULT NULL  COMMENT '削除日時',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
     `description` VARCHAR(128) COMMENT 'タスクの詳細',
     `is_done` BIT NOT NULL COMMENT 'タスクの状態',
