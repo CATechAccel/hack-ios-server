@@ -48,6 +48,9 @@ type taskDoneRequest struct {
 	TaskIDs []*taskID `json:"taskIDs"`
 }
 
+type PostTaskDoneResponse struct {
+	Tasks []*task `json:"tasks"`
+}
 type mockTaskDoneResponse struct {
 	Tasks []*task `json:"tasks"`
 }
