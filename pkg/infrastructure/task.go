@@ -17,7 +17,7 @@ type Task struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 	Name        string         `gorm:"not null"`
 	Description *string
-	IsDone      bool   `gorm:"type:bit;not null"`
+	IsDone      bool   `gorm:"not null"`
 	UserID      string `gorm:"size:255;not null"`
 	User        User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
