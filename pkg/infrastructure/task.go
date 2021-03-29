@@ -17,7 +17,7 @@ type Task struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 	Name        string         `gorm:"not null"`
 	Description *string
-	IsDone      bool   `gorm:"not null"`
+	IsDone      bool   `gorm:"type:bit;not null"`
 	UserID      string `gorm:"size:255;not null"`
 	User        User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
@@ -85,7 +85,7 @@ func (tr *TaskRepository) FindTasksByUserID(ctx context.Context, userID string) 
 
 func (tr *TaskRepository) UpdateTaskDoneByTaskIDs(ctx context.Context, taskIDs []string) (tasks []*entity.Task, err error) {
 	// taskIDをもとにis_doneをtrueに更新
-	if err := tr.Conn.WithContext(ctx).Where("task_id IN ?", taskIDs).Updates(map[string]interface{}{"has_done": true}).Error; err != nil {
+	if err := tr.Conn.WithContext(ctx).Where("task_id IN ?", taskIDs).Updates(map[string]interface{}{"is_done": 1}).Error; err != nil {
 		return nil, err
 	}
 
