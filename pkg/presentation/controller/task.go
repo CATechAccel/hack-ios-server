@@ -47,9 +47,6 @@ type taskDoneRequest struct {
 type PostTaskDoneResponse struct {
 	Tasks []*task `json:"tasks"`
 }
-type mockTaskDoneResponse struct {
-	Tasks []*task `json:"tasks"`
-}
 
 func (t *Task) HandleCreateTask(c echo.Context) error {
 	req := new(createTaskRequest)
