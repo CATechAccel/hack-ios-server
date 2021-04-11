@@ -85,12 +85,12 @@ func (tr *TaskRepository) FindTasksByUserID(ctx context.Context, userID string) 
 
 func (tr *TaskRepository) UpdateTaskDoneByTaskIDs(ctx context.Context, taskIDs []string) (tasks []*entity.Task, err error) {
 	// taskIDをもとにis_doneをtrueに更新
-	if err := tr.Conn.WithContext(ctx).Where("task_id IN ?", taskIDs).Updates(map[string]interface{}{"is_done": 1}).Error; err != nil {
+	if err := tr.Conn.WithContext(ctx).Table("tasks").Where("id IN ?", taskIDs).Updates(map[string]interface{}{"is_done": 1}).Error; err != nil {
 		return nil, err
 	}
 
 	ts := make([]*Task, 0, len(taskIDs))
-	if err := tr.Conn.WithContext(ctx).Where("task_id IN ?", taskIDs).Find(&ts).Error; err != nil {
+	if err := tr.Conn.WithContext(ctx).Table("tasks").Where("id IN ?", taskIDs).Find(&ts).Error; err != nil {
 		return nil, err
 	}
 	for _, t := range ts {
