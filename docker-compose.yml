@@ -10,7 +10,7 @@ services:
       - mysql
     image: hack-ios-server-image
     container_name: hack-ios-server-cnt
-    command: air -c ./config/.air.toml
+    command: ./wait-for-it.sh mysql:3306 -- air -c ./config/.air.toml
     ports:
       - 8080:8080
     volumes:
