@@ -51,7 +51,10 @@ func (ta *TaskApplication) FindTasks(ctx context.Context, userID string) (tasks 
 }
 
 func (ta *TaskApplication) UpdateTasksDone(ctx context.Context, taskIDs []string) (tasks []*entity.Task, err error) {
-	tasks, err = ta.taskRepository.UpdateTaskDoneByTaskIDs(ctx, taskIDs)
+	if err := ta.taskRepository.UpdateTaskDoneByTaskIDs(ctx, taskIDs); err != nil {
+		return nil, err
+	}
+	tasks, err = ta.taskRepository.FindTasksByTaskIDs(ctx, taskIDs)
 	if err != nil {
 		return nil, err
 	}
