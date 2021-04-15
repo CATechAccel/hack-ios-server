@@ -40,7 +40,7 @@ type GetTaskResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
-type taskDoneRequest struct {
+type PostTaskDoneRequest struct {
 	TaskIDs []string `json:"taskIDs"`
 }
 
@@ -103,7 +103,7 @@ func (t *Task) HandleGetTask(c echo.Context) error {
 
 func (t *Task) HandleTaskDone(c echo.Context) error {
 	ctx := c.Request().Context()
-	req := new(taskDoneRequest)
+	req := new(PostTaskDoneRequest)
 	if err := c.Bind(req); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
