@@ -20,10 +20,6 @@ func NewTask(taskApplication application.Task) *Task {
 	}
 }
 
-type taskID struct {
-	ID string `json:"id"`
-}
-
 type task struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
@@ -44,11 +40,11 @@ type GetTaskResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
-type taskDoneRequest struct {
-	TaskIDs []*taskID `json:"taskIDs"`
+type PostTaskDoneRequest struct {
+	TaskIDs []string `json:"taskIDs"`
 }
 
-type mockTaskDoneResponse struct {
+type PostTaskDoneResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
@@ -106,24 +102,29 @@ func (t *Task) HandleGetTask(c echo.Context) error {
 }
 
 func (t *Task) HandleTaskDone(c echo.Context) error {
-	req := new(taskDoneRequest)
+	ctx := c.Request().Context()
+	req := new(PostTaskDoneRequest)
 	if err := c.Bind(req); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	taskIDs := req.TaskIDs
-	tasks := make([]*task, 0, len(taskIDs))
-	for _, taskID := range taskIDs {
-		task := &task{
-			ID:          taskID.ID,
-			Name:        "doneName",
-			Description: nil,
-			IsDone:      true,
-		}
-		tasks = append(tasks, task)
+	ts, err := t.TaskApplication.UpdateTasksDone(ctx, req.TaskIDs)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	mockRes := mockTaskDoneResponse{
+
+	tasks := make([]*task, 0, len(req.TaskIDs))
+	for _, t := range ts {
+		tasks = append(tasks, &task{
+			ID:          t.ID,
+			Name:        t.Name,
+			Description: t.Description,
+			IsDone:      t.IsDone,
+		})
+	}
+	res := &PostTaskDoneResponse{
 		Tasks: tasks,
 	}
-	return c.JSON(http.StatusOK, mockRes)
+	return c.JSON(http.StatusOK, res)
 }

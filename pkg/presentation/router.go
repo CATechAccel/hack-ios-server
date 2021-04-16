@@ -27,7 +27,6 @@ func NewEcho() *echo.Echo {
 	tr := infrastructure.NewTaskRepository(conn)
 	ta := application.NewTaskApplication(tr)
 	tc := controller.NewTask(ta)
-	t := &controller.Task{}
 	e.POST("/users", uc.HandleCreateUser)
 	e.POST("/login", uc.HandleLogin)
 	// tokenが正常に作動しているかの確認API
@@ -37,7 +36,7 @@ func NewEcho() *echo.Echo {
 	r.GET("", restricted)
 	r.POST("", tc.HandleCreateTask)
 	r.GET("", tc.HandleGetTask)
-	e.POST("/tasks/done", t.HandleTaskDone)
+	e.POST("/tasks/done", tc.HandleTaskDone)
 	return e
 }
 

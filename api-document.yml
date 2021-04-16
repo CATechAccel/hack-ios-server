@@ -177,11 +177,8 @@ components:
         taskIDs:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: タスクID
+            type: "string"
+            description: タスクID
     PostTasksDoneResponse:
       type: object
       properties:

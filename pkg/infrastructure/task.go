@@ -82,3 +82,23 @@ func (tr *TaskRepository) FindTasksByUserID(ctx context.Context, userID string) 
 	}
 	return tasks, nil
 }
+
+func (tr *TaskRepository) UpdateTaskDoneByTaskIDs(ctx context.Context, taskIDs []string) (err error) {
+	// taskIDをもとにis_doneをtrueに更新
+	if err := tr.Conn.WithContext(ctx).Table("tasks").Where("id IN ?", taskIDs).Updates(map[string]interface{}{"is_done": 1}).Error; err != nil {
+		return err
+	}
+	return err
+}
+
+func (tr *TaskRepository) FindTasksByTaskIDs(ctx context.Context, taskIDs []string) (tasks []*entity.Task, err error) {
+	ts := make([]*Task, 0, len(taskIDs))
+	if err := tr.Conn.WithContext(ctx).Table("tasks").Where("id IN ?", taskIDs).Find(&ts).Error; err != nil {
+		return nil, err
+	}
+	for _, t := range ts {
+		task := taskToEntity(t)
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
+}

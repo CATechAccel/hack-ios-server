@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `deleted_at` TIMESTAMP NULL DEFAULT NULL  COMMENT '削除日時',
     `name` VARCHAR(64) NOT NULL COMMENT 'タスク名',
     `description` VARCHAR(128) COMMENT 'タスクの詳細',
-    `is_done` BIT NOT NULL COMMENT 'タスクの状態',
+    `is_done`  TINYINT(1) NOT NULL COMMENT 'タスクの状態',
     `user_id` VARCHAR(128) NOT NULL COMMENT 'ユーザID',
     PRIMARY KEY (`id`),
     INDEX `idx_created_at` (`created_at` ASC),
