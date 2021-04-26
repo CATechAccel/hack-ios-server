@@ -1,17 +1,21 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
+	"github.com/ari1021/hack-ios-server/core"
+	"github.com/ari1021/hack-ios-server/pkg/application"
 	"github.com/labstack/echo/v4"
 )
 
 type User struct {
+	UserApplication application.User
 }
 
-func NewUser() *User {
-	return &User{}
+func NewUser(userApplication application.User) *User {
+	return &User{
+		UserApplication: userApplication,
+	}
 }
 
 type CreateUserRequest struct {
@@ -19,7 +23,7 @@ type CreateUserRequest struct {
 	Password string `json:"password"`
 }
 
-type mockCreateUserResponse struct {
+type CreateUserResponse struct {
 	Token string `json:"token"`
 }
 
@@ -28,30 +32,41 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type mockLoginResponse struct {
+type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+// HandleCreateUser は，userを作成し，tokenを返します．
 func (u *User) HandleCreateUser(c echo.Context) error {
+	ctx := c.Request().Context()
+	uuidGenerator := core.NewUUIDGenerator()
 	req := new(CreateUserRequest)
 	if err := c.Bind(req); err != nil {
-		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	mockRes := &mockCreateUserResponse{
-		Token: req.Name + req.Password,
+	token, err := u.UserApplication.CreateUser(ctx, uuidGenerator, req.Name, req.Password)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "create user failed in UserApplication.CreateUser")
 	}
-	return c.JSON(http.StatusOK, mockRes)
+	res := &CreateUserResponse{
+		Token: token,
+	}
+	return c.JSON(http.StatusOK, res)
 }
 
+// HandleLogin は，ログイン処理を行い，tokenを返します．
 func (u *User) HandleLogin(c echo.Context) error {
+	ctx := c.Request().Context()
 	req := new(LoginRequest)
 	if err := c.Bind(req); err != nil {
-		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	mockRes := &mockLoginResponse{
-		Token: req.Name + req.Password,
+	token, err := u.UserApplication.FindUser(ctx, req.Name, req.Password)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid (userName, password)")
 	}
-	return c.JSON(http.StatusOK, mockRes)
+	res := &LoginResponse{
+		Token: token,
+	}
+	return c.JSON(http.StatusOK, res)
 }

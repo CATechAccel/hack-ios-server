@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      # dev.dockerfile は開発環境のみ想定
+      dockerfile: dev.dockerfile
+    depends_on:
+      - mysql
+    image: hack-ios-server-image
+    container_name: hack-ios-server-cnt
+    command: ./wait-for-it.sh mysql:3306 -- air -c ./config/.air.toml
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: "hack-ios-server"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: hack_ios_server_api
+    networks:
+      - mysql_net
+
+  mysql:
+    build:
+      context: .
+      dockerfile: mysql.dockerfile
+    image: hack-ios-server-mysql-image
+    container_name: hack-ios-server-mysql-cnt
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    environment:
+      MYSQL_ROOT_PASSWORD: "hack-ios-server"
+      TZ: "Asia/Tokyo"
+    cap_add:
+      - SYS_NICE # mbind: Operation not permitted 回避
+    networks:
+      - mysql_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: "hack-ios-server"
+    links:
+      - mysql
+    ports:
+      - 4000:80
+    networks:
+      - mysql_net
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    environment:
+      SWAGGER_JSON: /api/api-document.yml
+    volumes:
+      - ./api-document.yml:/api/api-document.yml:ro
+    ports:
+      - 3000:8080
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  mysql_net:

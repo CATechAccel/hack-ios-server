@@ -4,45 +4,47 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ari1021/hack-ios-server/core"
+	"github.com/ari1021/hack-ios-server/pkg/application"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 )
 
 type Task struct {
+	TaskApplication application.Task
 }
 
-func NewTask() *Task {
-	return &Task{}
-}
-
-type taskID struct {
-	ID string `json:"id"`
+func NewTask(taskApplication application.Task) *Task {
+	return &Task{
+		TaskApplication: taskApplication,
+	}
 }
 
 type task struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	IsDone      bool   `json:"isDone"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+	IsDone      bool    `json:"isDone"`
 }
 
 type createTaskRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 }
 
-type mockCreateTaskResponse struct {
-	task
+type CreateTaskResponse struct {
+	task `json:"task"`
 }
 
-type mockGetTaskResponse struct {
+type GetTaskResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
-type taskDoneRequest struct {
-	TaskIDs []*taskID `json:"taskIDs"`
+type PostTaskDoneRequest struct {
+	TaskIDs []string `json:"taskIDs"`
 }
 
-type mockTaskDoneResponse struct {
+type PostTaskDoneResponse struct {
 	Tasks []*task `json:"tasks"`
 }
 
@@ -52,57 +54,77 @@ func (t *Task) HandleCreateTask(c echo.Context) error {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	mockRes := &mockCreateTaskResponse{
+	ctx := c.Request().Context()
+	uuidGenerator := core.NewUUIDGenerator()
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+	te, err := t.TaskApplication.CreateTask(ctx, uuidGenerator, req.Name, req.Description, userID)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	res := &CreateTaskResponse{
 		task{
-			ID:          "id",
-			Name:        req.Name,
-			Description: req.Description,
-			IsDone:      false,
+			ID:          te.ID,
+			Name:        te.Name,
+			Description: te.Description,
+			IsDone:      te.IsDone,
 		},
 	}
-	return c.JSON(http.StatusOK, mockRes)
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (t *Task) HandleGetTask(c echo.Context) error {
+	ctx := c.Request().Context()
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+	ts, err := t.TaskApplication.FindTasks(ctx, userID)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
 	var tasks []*task
-	tasks = append(tasks, &task{
-		ID:          "testID1",
-		Name:        "testName1",
-		Description: "testDescription1",
-		IsDone:      true,
-	})
-	tasks = append(tasks, &task{
-		ID:          "testID2",
-		Name:        "testName2",
-		Description: "testDescription2",
-		IsDone:      false,
-	})
-	mockRes := &mockGetTaskResponse{
+	for _, t := range ts {
+		tasks = append(tasks, &task{
+			ID:          t.ID,
+			Name:        t.Name,
+			Description: t.Description,
+			IsDone:      t.IsDone,
+		})
+	}
+	res := &GetTaskResponse{
 		Tasks: tasks,
 	}
 
-	return c.JSON(http.StatusOK, mockRes)
+	return c.JSON(http.StatusOK, res)
 }
 
 func (t *Task) HandleTaskDone(c echo.Context) error {
-	req := new(taskDoneRequest)
+	ctx := c.Request().Context()
+	req := new(PostTaskDoneRequest)
 	if err := c.Bind(req); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
-	taskIDs := req.TaskIDs
-	tasks := make([]*task, 0, len(taskIDs))
-	for _, taskID := range taskIDs {
-		task := &task{
-			ID:          taskID.ID,
-			Name:        "doneName",
-			Description: "doneDescription",
-			IsDone:      true,
-		}
-		tasks = append(tasks, task)
+	ts, err := t.TaskApplication.UpdateTasksDone(ctx, req.TaskIDs)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	mockRes := mockTaskDoneResponse{
+
+	tasks := make([]*task, 0, len(req.TaskIDs))
+	for _, t := range ts {
+		tasks = append(tasks, &task{
+			ID:          t.ID,
+			Name:        t.Name,
+			Description: t.Description,
+			IsDone:      t.IsDone,
+		})
+	}
+	res := &PostTaskDoneResponse{
 		Tasks: tasks,
 	}
-	return c.JSON(http.StatusOK, mockRes)
+	return c.JSON(http.StatusOK, res)
 }
